@@ -1,0 +1,18 @@
+components/forms/contact-form.tsx(18,9): error TS2322: Type 'Resolver<{ name: string; email: string; type: "inquiry" | "speaking" | "other"; message: string; org?: string | undefined; source?: string | undefined; consent?: boolean | undefined; }, any, { ...; }>' is not assignable to type 'Resolver<{ name: string; email: string; type: "inquiry" | "speaking" | "other"; message: string; source: string; consent: boolean; org?: string | undefined; }, any, { name: string; email: string; type: "inquiry" | ... 1 more ... | "other"; message: string; source: string; consent: boolean; org?: string | undefined; }>'.
+  Types of parameters 'options' and 'options' are incompatible.
+    Type 'ResolverOptions<{ name: string; email: string; type: "inquiry" | "speaking" | "other"; message: string; source: string; consent: boolean; org?: string | undefined; }>' is not assignable to type 'ResolverOptions<{ name: string; email: string; type: "inquiry" | "speaking" | "other"; message: string; org?: string | undefined; source?: string | undefined; consent?: boolean | undefined; }>'.
+      Type 'string | undefined' is not assignable to type 'string'.
+        Type 'undefined' is not assignable to type 'string'.
+components/forms/contact-form.tsx(67,38): error TS2345: Argument of type '(data: ContactFormData) => Promise<void>' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ name: string; email: string; type: "inquiry" | "speaking" | "other"; message: string; source: string; consent: boolean; org?: string | undefined; }'.
+      Type 'FieldValues' is missing the following properties from type '{ name: string; email: string; type: "inquiry" | "speaking" | "other"; message: string; source: string; consent: boolean; org?: string | undefined; }': name, email, type, message, and 2 more.
+components/forms/download-form.tsx(17,9): error TS2322: Type 'Resolver<{ email: string; name?: string | undefined; source?: string | undefined; }, any, { email: string; source: string; name?: string | undefined; }>' is not assignable to type 'Resolver<{ email: string; source: string; name?: string | undefined; }, any, { email: string; source: string; name?: string | undefined; }>'.
+  Types of parameters 'options' and 'options' are incompatible.
+    Type 'ResolverOptions<{ email: string; source: string; name?: string | undefined; }>' is not assignable to type 'ResolverOptions<{ email: string; name?: string | undefined; source?: string | undefined; }>'.
+      Type 'string | undefined' is not assignable to type 'string'.
+        Type 'undefined' is not assignable to type 'string'.
+components/forms/download-form.tsx(59,38): error TS2345: Argument of type '(data: DownloadFormData) => Promise<void>' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ email: string; source: string; name?: string | undefined; }'.
+      Type 'FieldValues' is missing the following properties from type '{ email: string; source: string; name?: string | undefined; }': email, source
