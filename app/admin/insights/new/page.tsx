@@ -17,7 +17,7 @@ export default function NewInsightPage() {
                 <h1 className="text-2xl font-bold">Write New Insight</h1>
             </div>
 
-            <form action={createInsight} className="bg-white p-6 rounded-xl border shadow-sm space-y-6">
+            <form action={createInsight} encType="multipart/form-data" className="bg-white p-6 rounded-xl border shadow-sm space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
                         <div>
