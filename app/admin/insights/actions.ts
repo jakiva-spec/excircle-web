@@ -23,10 +23,13 @@ export async function createInsight(formData: FormData) {
         const fileExt = imageFile.name.split('.').pop();
         const fileName = `insights/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
         
+        // Convert File to ArrayBuffer for Node.js / Server Action compatibility
+        const arrayBuffer = await imageFile.arrayBuffer();
+
         const { data: uploadData, error: uploadError } = await supabaseAdmin
             .storage
             .from(bucketName)
-            .upload(fileName, imageFile, {
+            .upload(fileName, arrayBuffer, {
                 contentType: imageFile.type,
                 upsert: false
             });
