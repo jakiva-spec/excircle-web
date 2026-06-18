@@ -18,7 +18,36 @@ export default function NewInsightPage() {
         setErrorMsg('');
         
         try {
-            const formData = new FormData(e.currentTarget);
+            const form = e.currentTarget;
+            const formData = new FormData(form);
+            const fileField = form.elements.namedItem('cover_image') as HTMLInputElement;
+            const file = fileField?.files?.[0];
+
+            let cover_image_url = '';
+
+            // 1. Upload file via API route if selected
+            if (file && file.size > 0) {
+                const uploadData = new FormData();
+                uploadData.append('file', file);
+
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: uploadData
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to upload image via API');
+                }
+                
+                cover_image_url = data.url;
+            }
+
+            // 2. Append the URL to the form data and send to Server Action
+            formData.set('cover_image_url', cover_image_url);
+            formData.delete('cover_image'); // Remove the File object to avoid Next.js serialization bugs
+            
             await createInsight(formData);
         } catch (err: any) {
             console.error('Submission error:', err);
