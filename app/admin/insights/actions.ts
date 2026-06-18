@@ -4,15 +4,16 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-export async function createInsight(formData: FormData) {
+export async function createInsight(data: {
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    tags: string[];
+    cover_image_url: string;
+}) {
     try {
-        const title = formData.get('title') as string;
-        const slug = formData.get('slug') as string;
-        const excerpt = formData.get('excerpt') as string;
-        const content = formData.get('content') as string;
-        const tags = (formData.get('tags') as string)?.split(',').map(tag => tag.trim()).filter(Boolean);
-
-        let cover_image_url = formData.get('cover_image_url') as string || ''; // Sent from the client after API upload
+        const { title, slug, excerpt, content, tags, cover_image_url } = data;
 
         const { error } = await supabaseAdmin
             .from('insights')

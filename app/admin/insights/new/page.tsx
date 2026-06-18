@@ -50,11 +50,18 @@ export default function NewInsightPage() {
                 cover_image_url = data.url;
             }
 
-            // 2. Append the URL to the form data and send to Server Action
-            formData.set('cover_image_url', cover_image_url);
-            formData.delete('cover_image'); // Remove the File object to avoid Next.js serialization bugs
-            
-            await createInsight(formData);
+            // 2. Send data to Server Action as a plain object
+            const tagsString = formData.get('tags') as string;
+            const tags = tagsString ? tagsString.split(',').map(tag => tag.trim()).filter(Boolean) : [];
+
+            await createInsight({
+                title: formData.get('title') as string,
+                slug: formData.get('slug') as string,
+                excerpt: formData.get('excerpt') as string,
+                content: formData.get('content') as string,
+                tags,
+                cover_image_url
+            });
         } catch (err: any) {
             console.error('Submission error:', err);
             
