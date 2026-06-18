@@ -35,10 +35,16 @@ export default function NewInsightPage() {
                     body: uploadData
                 });
 
-                const data = await res.json();
+                const resText = await res.text();
+                let data;
+                try {
+                    data = JSON.parse(resText);
+                } catch (parseErr) {
+                    throw new Error(`서버 응답 오류 (${res.status}): JSON 형식이 아닙니다. 파일 용량이 너무 클 수 있습니다.`);
+                }
 
                 if (!res.ok) {
-                    throw new Error(data.error || 'Failed to upload image via API');
+                    throw new Error(data.error || `서버 응답 오류 (${res.status})`);
                 }
                 
                 cover_image_url = data.url;
@@ -51,7 +57,13 @@ export default function NewInsightPage() {
             await createInsight(formData);
         } catch (err: any) {
             console.error('Submission error:', err);
-            setErrorMsg(err.message || '업로드 중 오류가 발생했습니다.');
+            
+            // Next.js redirect() throws an error with this message, we MUST re-throw it!
+            if (err.message === 'NEXT_REDIRECT' || err?.digest?.startsWith('NEXT_REDIRECT')) {
+                throw err;
+            }
+
+            setErrorMsg(err.message || '알 수 없는 오류가 발생했습니다.');
             setIsSubmitting(false);
         }
     }
