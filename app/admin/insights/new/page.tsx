@@ -34,8 +34,9 @@ export default function NewInsightPage() {
                             <Input name="tags" placeholder="예: 리더십, 의사결정, 조직문화 (콤마로 구분)" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">Cover Image URL (커버 이미지)</label>
-                            <Input name="cover_image_url" placeholder="예: /images/insight-cover.jpg" />
+                            <label className="block text-sm font-medium mb-1">Cover Image (커버 이미지 첨부)</label>
+                            <Input type="file" name="cover_image" accept="image/*" className="cursor-pointer file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
+                            <p className="text-xs text-gray-500 mt-1">PC에 있는 이미지 파일을 직접 선택하세요. (자동으로 업로드됩니다)</p>
                         </div>
                     </div>
 
