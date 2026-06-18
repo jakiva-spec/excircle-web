@@ -5,57 +5,62 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 export async function createInsight(formData: FormData) {
-    const title = formData.get('title') as string;
-    const slug = formData.get('slug') as string;
-    const excerpt = formData.get('excerpt') as string;
-    const content = formData.get('content') as string;
-    const tags = (formData.get('tags') as string)?.split(',').map(tag => tag.trim()).filter(Boolean);
+    try {
+        const title = formData.get('title') as string;
+        const slug = formData.get('slug') as string;
+        const excerpt = formData.get('excerpt') as string;
+        const content = formData.get('content') as string;
+        const tags = (formData.get('tags') as string)?.split(',').map(tag => tag.trim()).filter(Boolean);
 
-    let cover_image_url = formData.get('cover_image_url') as string || ''; // Fallback for existing texts if any
-    const imageFile = formData.get('cover_image') as File | null;
+        let cover_image_url = formData.get('cover_image_url') as string || ''; // Fallback for existing texts if any
+        const imageFile = formData.get('cover_image') as File | null;
 
-    if (imageFile && imageFile.size > 0) {
-        const bucketName = 'images';
-        
-        // Ensure bucket exists (it will fail silently if it already exists, which is fine)
-        await supabaseAdmin.storage.createBucket(bucketName, { public: true }).catch(() => {});
+        if (imageFile && imageFile.size > 0) {
+            const bucketName = 'images';
+            
+            // Ensure bucket exists (it will fail silently if it already exists, which is fine)
+            await supabaseAdmin.storage.createBucket(bucketName, { public: true }).catch(() => {});
 
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `insights/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        
-        // Convert File to ArrayBuffer for Node.js / Server Action compatibility
-        const arrayBuffer = await imageFile.arrayBuffer();
+            const fileExt = imageFile.name.split('.').pop();
+            const fileName = `insights/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+            
+            // Convert File to ArrayBuffer for Node.js / Server Action compatibility
+            const arrayBuffer = await imageFile.arrayBuffer();
 
-        const { data: uploadData, error: uploadError } = await supabaseAdmin
-            .storage
-            .from(bucketName)
-            .upload(fileName, arrayBuffer, {
-                contentType: imageFile.type,
-                upsert: false
-            });
+            const { data: uploadData, error: uploadError } = await supabaseAdmin
+                .storage
+                .from(bucketName)
+                .upload(fileName, arrayBuffer, {
+                    contentType: imageFile.type,
+                    upsert: false
+                });
 
-        if (uploadError) {
-            console.error('Image upload failed:', uploadError);
-            throw new Error('Failed to upload image: ' + uploadError.message);
+            if (uploadError) {
+                console.error('Image upload failed:', uploadError);
+                return redirect('/admin/insights/new?error=upload_' + encodeURIComponent(uploadError.message));
+            }
+
+            const { data: publicUrlData } = supabaseAdmin.storage.from(bucketName).getPublicUrl(fileName);
+            cover_image_url = publicUrlData.publicUrl;
         }
 
-        const { data: publicUrlData } = supabaseAdmin.storage.from(bucketName).getPublicUrl(fileName);
-        cover_image_url = publicUrlData.publicUrl;
-    }
+        const { error } = await supabaseAdmin
+            .from('insights')
+            .insert([{
+                title,
+                slug,
+                excerpt,
+                content,
+                cover_image_url,
+                tags
+            }]);
 
-    const { error } = await supabaseAdmin
-        .from('insights')
-        .insert([{
-            title,
-            slug,
-            excerpt,
-            content,
-            cover_image_url,
-            tags
-        }]);
-
-    if (error) {
-        throw new Error('Failed to create insight: ' + error.message);
+        if (error) {
+            return redirect('/admin/insights/new?error=db_' + encodeURIComponent(error.message));
+        }
+    } catch (e: any) {
+        if (e.message === 'NEXT_REDIRECT') throw e;
+        return redirect('/admin/insights/new?error=fatal_' + encodeURIComponent(e.message || 'unknown_error'));
     }
 
     revalidatePath('/admin/insights');
