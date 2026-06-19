@@ -11,8 +11,9 @@ export async function POST(request: Request) {
         }
 
         const bucketName = 'images';
+        const folder = (formData.get('folder') as string) || 'uploads';
         const fileExt = file.name.split('.').pop();
-        const fileName = `insights/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
         
         const arrayBuffer = await file.arrayBuffer();
 

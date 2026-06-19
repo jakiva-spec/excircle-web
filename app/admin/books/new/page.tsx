@@ -29,6 +29,7 @@ export default function NewBookPage() {
             if (file && file.size > 0) {
                 const uploadData = new FormData();
                 uploadData.append('file', file);
+                uploadData.append('folder', 'books');
 
                 const res = await fetch('/api/upload', {
                     method: 'POST',
